@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Carrie Wang">
+    <meta name="description" content="Credit card">
+    <title>GreenWater</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/pies.js" language="JavaScript"></script>
+    <style>
+        .liquidFillGaugeText { font-family: Helvetica; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div id="index-wrapper">
+      <div id="index-banner" class="jumbotron">
+        <div class="container">
+          <div id="html-bars" class="col-lg-2">
+            <style>
+              .chart .legend {
+                fill: black;
+                font: 14px sans-serif;
+                text-anchor: start;
+                font-size: 12px;
+              }
+
+              .chart text {
+                fill: white;
+                font: 10px sans-serif;
+                text-anchor: end;
+              }
+
+              .chart .label {
+                fill: black;
+                font: 14px sans-serif;
+                text-anchor: end;
+              }
+
+              .bar:hover {
+                fill: brown;
+              }
+
+              .axis path,
+              .axis line {
+                fill: none;
+                stroke: #000;
+                shape-rendering: crispEdges;
+              }
+
+
+            </style>
+
+            <svg class="chart"></svg>
+            <script src="http://d3js.org/d3.v3.min.js"></script>
+            <script>
+
+            var data = {
+              labels: [
+                'Total Spending', 'Total Income/Checks', 'Card 1',
+                'Card 2', 'Cash'],
+              series: [
+                {
+                  label: 'September',
+                  values: [1009, 3000, 300, 500, 209]
+                },
+                {
+                  label: 'October',
+                  values: [1300, 3000, 400, 800, 100]
+                },]
+            };
+
+            var chartWidth       = 300,
+                barHeight        = 35,
+                groupHeight      = barHeight * data.series.length,
+                gapBetweenGroups = 10,
+                spaceForLabels   = 150,
+                spaceForLegend   = 150;
+
+            // Zip the series data together (first values, second values, etc.)
+            var zippedData = [];
+            for (var i=0; i<data.labels.length; i++) {
+              for (var j=0; j<data.series.length; j++) {
+                zippedData.push(data.series[j].values[i]);
+              }
+            }
+
+            // Color scale
+            var color = d3.scale.category20();
+            var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.labels.length;
+
+            var x = d3.scale.linear()
+                .domain([0, d3.max(zippedData)])
+                .range([0, chartWidth]);
+
+            var y = d3.scale.linear()
+                .range([chartHeight + gapBetweenGroups, 0]);
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .tickFormat('')
+                .tickSize(0)
+                .orient("left");
+
+            // Specify the chart area and dimensions
+            var chart = d3.select(".chart")
+                .attr("width", spaceForLabels + chartWidth + spaceForLegend)
+                .attr("height", chartHeight);
+
+            // Create bars
+            var bar = chart.selectAll("g")
+                .data(zippedData)
+                .enter().append("g")
+                .attr("transform", function(d, i) {
+                  return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + Math.floor(i/data.series.length))) + ")";
+                });
+
+            // Create rectangles of the correct width
+            bar.append("rect")
+                .attr("fill", function(d,i) { return color(i % data.series.length); })
+                .attr("class", "bar")
+                .attr("width", x)
+                .attr("height", barHeight - 1);
+
+            // Add text label in bar
+            bar.append("text")
+                .attr("x", function(d) { return x(d) - 3; })
+                .attr("y", barHeight / 2)
+                .attr("fill", "red")
+                .attr("dy", ".35em")
+                .text(function(d) { return d; });
+
+            // Draw labels
+            bar.append("text")
+                .attr("class", "label")
+                .attr("x", function(d) { return - 10; })
+                .attr("y", groupHeight / 2)
+                .attr("dy", ".35em")
+                .text(function(d,i) {
+                  if (i % data.series.length === 0)
+                    return data.labels[Math.floor(i/data.series.length)];
+                  else
+                    return ""});
+
+            chart.append("g")
+                  .attr("class", "y axis")
+                  .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
+                  .call(yAxis);
+
+            // Draw legend
+            var legendRectSize = 18,
+                legendSpacing  = 4;
+
+            var legend = chart.selectAll('.legend')
+                .data(data.series)
+                .enter()
+                .append('g')
+                .attr('transform', function (d, i) {
+                    var height = legendRectSize + legendSpacing;
+                    var offset = -gapBetweenGroups/2;
+                    var horz = spaceForLabels + chartWidth + 40 - legendRectSize;
+                    var vert = i * height - offset;
+                    return 'translate(' + horz + ',' + vert + ')';
+                });
+
+            legend.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style('fill', function (d, i) { return color(i); })
+                .style('stroke', function (d, i) { return color(i); });
+
+            legend.append('text')
+                .attr('class', 'legend')
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .text(function (d) { return d.label; });
+
+            </script>
+
+          </div>
+          <div id="html-pies" class="col-lg-2">
+            <svg id="fillgauge1" width="97%" height="250" onclick="gauge1.update(NewValue());"></svg>
+            <p>Income Spent</p>
+            <svg id="fillgauge2" width="97%" height="200" onclick="gauge2.update(NewValue());"></svg>
+            <p>Card 1 Limit Spent</p>
+            <svg id="fillgauge3" width="97%" height="200" onclick="gauge3.update(NewValue());"></svg>
+            <p>Card 2 Limit Spent</p>
+            <script language="JavaScript">
+              var gauge1 = loadLiquidFillGauge("fillgauge1", 55);
+              var config1 = liquidFillGaugeDefaultSettings();
+              config1.circleColor = "#FF7777";
+              config1.textColor = "#FF4444";
+              config1.waveTextColor = "#FFAAAA";
+              config1.waveColor = "#FFDDDD";
+              config1.circleThickness = 0.1;
+              config1.textVertPosition = 0.2;
+              config1.waveAnimateTime = 1000;
+              var gauge2= loadLiquidFillGauge("fillgauge2", 28, config1);
+              var config2 = liquidFillGaugeDefaultSettings();
+              config2.circleColor = "#D4AB6A";
+              config2.textColor = "#553300";
+              config2.waveTextColor = "#805615";
+              config2.waveColor = "#AA7D39";
+              config2.circleThickness = 0.1;
+              config2.circleFillGap = 0.2;
+              config2.textVertPosition = 0.8;
+              config2.waveAnimateTime = 2000;
+              config2.waveHeight = 0.3;
+              config2.waveCount = 1;
+              var gauge3 = loadLiquidFillGauge("fillgauge3", 60.1, config2);
+              var config3 = liquidFillGaugeDefaultSettings();
+              config3.textVertPosition = 0.8;
+              config3.waveAnimateTime = 5000;
+              config3.waveHeight = 0.15;
+              config3.waveAnimate = false;
+              config3.waveOffset = 0.25;
+              config3.valueCountUp = false;
+              config3.displayPercent = false;
+              
+              //THIS IS WHERE YOU GET THE UPDATE NUMBERS
+              function NewValue(){
+                  //if(Math.random() > .5){
+                    //  return Math.round(Math.random()*100);
+                  //} else {
+                    //  return (Math.random()*100).toFixed(1);
+                  //}
+                  return 5;
+              }
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+  </body>
+</html>

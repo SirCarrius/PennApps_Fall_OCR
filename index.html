@@ -192,11 +192,11 @@
 
           </div>
           <div id="html-pies" class="col-lg-2">
-            <svg id="fillgauge1" width="97%" height="250" onclick="gauge1.update(NewValue());"></svg>
+            <svg id="fillgauge1" width="97%" height="250"></svg>
             <p>Income Spent</p>
-            <svg id="fillgauge2" width="97%" height="200" onclick="gauge2.update(NewValue());"></svg>
+            <svg id="fillgauge2" width="97%" height="200"></svg>
             <p>Card 1 Limit Spent</p>
-            <svg id="fillgauge3" width="97%" height="200" onclick="gauge3.update(NewValue());"></svg>
+            <svg id="fillgauge3" width="97%" height="200"></svg>
             <p>Card 2 Limit Spent</p>
             <script language="JavaScript">
               var gauge1 = loadLiquidFillGauge("fillgauge1", 55);
@@ -232,13 +232,36 @@
               
               //THIS IS WHERE YOU GET THE UPDATE NUMBERS
               function NewValue(){
-                  //if(Math.random() > .5){
-                    //  return Math.round(Math.random()*100);
-                  //} else {
-                    //  return (Math.random()*100).toFixed(1);
-                  //}
-                  return 5;
+                  if(Math.random() > .5){
+                     return Math.round(Math.random()*100);
+                  } else {
+                     return (Math.random()*100).toFixed(1);
+                  }
               }
+              function NewValue2(){
+                  if(Math.random() > .5){
+                     return Math.round(Math.random()*100);
+                  } else {
+                     return (Math.random()*100).toFixed(1);
+                  }
+              }
+              function NewValue3(){
+                  if(Math.random() > .5){
+                     return Math.round(Math.random()*100);
+                  } else {
+                     return (Math.random()*100).toFixed(1);
+                  }
+              }
+              function updateDisplay() {
+                  gauge1.update(NewValue());
+                  gauge2.update(NewValue2());
+                  gauge3.update(NewValue3());
+              }
+              setInterval(updateDisplay, 5000);
+//setTimeout(updateDisplay, 5000);
+              ajaxCall(function(response) {
+
+              });
             </script>
           </div>
         </div>

@@ -10,6 +10,7 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
     <script src="js/pies.js" language="JavaScript"></script>
     <style>
         .liquidFillGaugeText { font-family: Helvetica; font-weight: bold; }
@@ -20,8 +21,8 @@
       <div class="container">
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
+            <li><a href="index.html">Home</a></li>
+            <!-- <li><a href="about.html">Receipts</a></li> -->
           </ul>
         </div>
       </div>
@@ -30,174 +31,162 @@
       <div id="index-banner" class="jumbotron">
         <div class="container">
           <div id="html-bars" class="col-lg-2">
+            <h4 id="income">Income: $3000</h4>
+            <h4 id="Spent">Spent: $1300</h4>
             <style>
-              .chart .legend {
-                fill: black;
-                font: 14px sans-serif;
-                text-anchor: start;
-                font-size: 12px;
-              }
-
-              .chart text {
-                fill: white;
-                font: 10px sans-serif;
-                text-anchor: end;
-              }
-
-              .chart .label {
-                fill: black;
-                font: 14px sans-serif;
-                text-anchor: end;
-              }
-
-              .bar:hover {
-                fill: brown;
-              }
-
-              .axis path,
-              .axis line {
-                fill: none;
-                stroke: #000;
-                shape-rendering: crispEdges;
-              }
-
-
-            </style>
-
-            <svg class="chart"></svg>
-            <script src="http://d3js.org/d3.v3.min.js"></script>
-            <script>
-
-            var data = {
-              labels: [
-                'Total Spending', 'Total Income/Checks', 'Card 1',
-                'Card 2', 'Cash'],
-              series: [
-                {
-                  label: 'September',
-                  values: [1009, 3000, 300, 500, 209]
-                },
-                {
-                  label: 'October',
-                  values: [1300, 3000, 400, 800, 100]
-                },]
-            };
-
-            var chartWidth       = 300,
-                barHeight        = 35,
-                groupHeight      = barHeight * data.series.length,
-                gapBetweenGroups = 10,
-                spaceForLabels   = 150,
-                spaceForLegend   = 150;
-
-            // Zip the series data together (first values, second values, etc.)
-            var zippedData = [];
-            for (var i=0; i<data.labels.length; i++) {
-              for (var j=0; j<data.series.length; j++) {
-                zippedData.push(data.series[j].values[i]);
-              }
+            body {
+              font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             }
 
-            // Color scale
-            var color = d3.scale.category20();
-            var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.labels.length;
+            button {
+              position: absolute;
+              right: -250px;
+              top: 10px;
+            }
 
-            var x = d3.scale.linear()
-                .domain([0, d3.max(zippedData)])
-                .range([0, chartWidth]);
+            .bullet { font: 10px sans-serif; position:absolute; margin-top:-1100px; margin-left:-30px;}
+            .bullet .marker { stroke: #000; stroke-width: 2px; }
+            .bullet .tick line { stroke: #666; stroke-width: .5px; }
+            .bullet .range.s0 { fill: #eee; }
+            .bullet .range.s1 { fill: #ddd; }
+            .bullet .range.s2 { fill: #ccc; }
+            .bullet .meausre.s0 { fill: darkgreen;}
+            .bullet .measure.s1 { fill: palegreen; }
+            .bullet .measure.s2 { fill: seagreen; }
+            .bullet .measure.s3 { fill: chartreuse;}
+            .bullet .title { font-size: 14px; font-weight: bold; }
+            .bullet .subtitle { fill: #999; }
 
-            var y = d3.scale.linear()
-                .range([chartHeight + gapBetweenGroups, 0]);
+            </style>
+            <button><a href="file:///Users/carrie/Documents/PennApps_Fall2015/PennApps_Fall_OCR/about.html">Show All Receipts</a></button>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+            <script src="js/bullet.js"></script>
+             <script>
 
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .tickFormat('')
-                .tickSize(0)
-                .orient("left");
+            var margin = {top: 5, right: 40, bottom: 20, left: 120},
+                width = 730 - margin.right,
+                height = 50 - margin.bottom;
 
-            // Specify the chart area and dimensions
-            var chart = d3.select(".chart")
-                .attr("width", spaceForLabels + chartWidth + spaceForLegend)
-                .attr("height", chartHeight);
+            var chart = d3.bullet()
+                .width(width)
+                .height(height);
 
-            // Create bars
-            var bar = chart.selectAll("g")
-                .data(zippedData)
-                .enter().append("g")
-                .attr("transform", function(d, i) {
-                  return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + Math.floor(i/data.series.length))) + ")";
-                });
+            var jsonobj = [{"title":"Spending","subtitle":"US$","ranges":[1300, 3000],"measures":[500, 1200, 1300, 3000],"markers":[1500, 2500]}];
 
-            // Create rectangles of the correct width
-            bar.append("rect")
-                .attr("fill", function(d,i) { return color(i % data.series.length); })
-                .attr("class", "bar")
-                .attr("width", x)
-                .attr("height", barHeight - 1);
 
-            // Add text label in bar
-            bar.append("text")
-                .attr("x", function(d) { return x(d) - 3; })
-                .attr("y", barHeight / 2)
-                .attr("fill", "red")
-                .attr("dy", ".35em")
-                .text(function(d) { return d; });
+              var svg = d3.select("body").selectAll("svg")
+                  .data(jsonobj)
+                .enter().append("svg")
+                  .attr("class", "bullet")
+                  .attr("width", width + margin.left + margin.right)
+                  .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                  .call(chart);
 
-            // Draw labels
-            bar.append("text")
-                .attr("class", "label")
-                .attr("x", function(d) { return - 10; })
-                .attr("y", groupHeight / 2)
-                .attr("dy", ".35em")
-                .text(function(d,i) {
-                  if (i % data.series.length === 0)
-                    return data.labels[Math.floor(i/data.series.length)];
-                  else
-                    return ""});
+              var title = svg.append("g")
+                  .style("text-anchor", "end")
+                  .attr("transform", "translate(-6," + height / 2 + ")");
 
-            chart.append("g")
-                  .attr("class", "y axis")
-                  .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
-                  .call(yAxis);
+              title.append("text")
+                  .attr("class", "title")
+                  .text(function(d) { return d.title; });
 
-            // Draw legend
-            var legendRectSize = 18,
-                legendSpacing  = 4;
+              title.append("text")
+                  .attr("class", "subtitle")
+                  .attr("dy", "1em")
+                  .text(function(d) { return d.subtitle; });
 
-            var legend = chart.selectAll('.legend')
-                .data(data.series)
-                .enter()
-                .append('g')
-                .attr('transform', function (d, i) {
-                    var height = legendRectSize + legendSpacing;
-                    var offset = -gapBetweenGroups/2;
-                    var horz = spaceForLabels + chartWidth + 40 - legendRectSize;
-                    var vert = i * height - offset;
-                    return 'translate(' + horz + ',' + vert + ')';
-                });
+              //d3.selectAll("button").on("click", function() {
+                 //svg.datum(randomize).call(chart.duration(1000)); // TODO automatic transition
 
-            legend.append('rect')
-                .attr('width', legendRectSize)
-                .attr('height', legendRectSize)
-                .style('fill', function (d, i) { return color(i); })
-                .style('stroke', function (d, i) { return color(i); });
+               //});
+            
 
-            legend.append('text')
-                .attr('class', 'legend')
-                .attr('x', legendRectSize + legendSpacing)
-                .attr('y', legendRectSize - legendSpacing)
-                .text(function (d) { return d.label; });
+            // function randomize(d) {
+            //   if (!d.randomizer) d.randomizer = randomizer(d);
+            //   d.ranges = d.ranges.map(d.randomizer);
+            //   d.markers = d.markers.map(d.randomizer);
+            //   d.measures = d.measures.map(d.randomizer);
+            //   return d;
+            // }
 
-            </script>
+            // function randomizer(d) {
+            //   var k = d3.max(d.ranges) * .2;
+            //   return function(d) {
+            //     return Math.max(0, d + k * (Math.random() - .5));
+            //   };
+            // }
 
+            // setInterval(svg.datum(randomize).call(chart.duration(1000)), 5000);
+
+             </script>
+             <TABLE BORDER=3 CELLSPACING=5 CELLPADDING=5 class="spending-table">
+              <TR>
+              <TD COLSPAN="5" ALIGN=center><B>September 2015</B></TD> 
+              </TR>
+              <TR>
+              </TR>
+              <TR> 
+              <TD ALIGN=center>Date</TD>
+              <TD ALIGN=center>Location</TD>
+              <TD ALIGN=center>Money Spent</TD>
+              <TD ALIGN=center>Cash or Credit</TD>
+              <TD ALIGN=center>Receipts</TD>
+              </TR>
+              <TR> 
+              <TD ALIGN=center>3</TD>
+              <TD ALIGN=center>4</TD>
+              <TD ALIGN=center>1</TD>
+              <TD ALIGN=center>2</TD>
+              <TD ALIGN=center><a href="" onclick='displayImage("img/receipt_one.jpg"); return false;' id="imageOne">Show Receipt</a></TD>
+              </TR>
+              <TR> 
+              <TD ALIGN=center>6</TD>
+              <TD ALIGN=center>7</TD>
+              <TD ALIGN=center>8</TD>
+              <TD ALIGN=center>9</TD>
+              <TD ALIGN=center><a href="" onclick='displayImage("img/receipt_two.jpg"); return false;' id="imageTwo">Show Receipt</a></TD>
+              </TR>
+              <TR> 
+              <TD ALIGN=center>13</TD>
+              <TD ALIGN=center>14</TD>
+              <TD ALIGN=center>15</TD>
+              <TD ALIGN=center>16</TD>
+              <TD ALIGN=center><a href="" id="imageThree">Show Receipt</a></TD>
+              </TR>
+              <TR> 
+              <TD ALIGN=center>20</TD>
+              <TD ALIGN=center>21</TD>
+              <TD ALIGN=center>22</TD>
+              <TD ALIGN=center>23</TD>
+              <TD ALIGN=center><a href="" onclick="receiptFour()" id="imageFour">Show Receipt</a></TD>
+              </TR>
+              <TR> 
+              <TD ALIGN=center>27</TD>
+              <TD ALIGN=center>28</TD>
+              <TD ALIGN=center>29</TD>
+              <TD ALIGN=center>30</TD>
+              <TD ALIGN=center><a href="" onclick="receiptFive()" id="imageFive">Show Receipt</a></TD>
+              </TR>
+              <TR> 
+              <TD ALIGN=center></TD>
+              <TD ALIGN=center></TD>
+              <TD ALIGN=center></TD>
+              <TD ALIGN=center></TD>
+              <TD ALIGN=center></TD>
+              </TR>
+            </TABLE>
+            <img id="image" style="width:100%;"></img><!-- 
+            <img id="image" src="img/receipt_two.jpg" alt="receipt" style="width:100%;"></img> -->
           </div>
           <div id="html-pies" class="col-lg-2">
             <svg id="fillgauge1" width="97%" height="250"></svg>
-            <p>Income Spent</p>
+            <p>Income Left</p>
             <svg id="fillgauge2" width="97%" height="200"></svg>
-            <p>Card 1 Limit Spent</p>
+            <p>Card 1 Limit Left</p>
             <svg id="fillgauge3" width="97%" height="200"></svg>
-            <p>Card 2 Limit Spent</p>
+            <p>Card 2 Limit Left</p>
             <script language="JavaScript">
               var gauge1 = loadLiquidFillGauge("fillgauge1", 55);
               var config1 = liquidFillGaugeDefaultSettings();
@@ -259,9 +248,9 @@
               }
               setInterval(updateDisplay, 5000);
 //setTimeout(updateDisplay, 5000);
-              ajaxCall(function(response) {
+              // ajaxCall(function(response) {
 
-              });
+              // });
             </script>
           </div>
         </div>
@@ -269,5 +258,6 @@
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script src="js/show_image.js"></script>
   </body>
 </html>

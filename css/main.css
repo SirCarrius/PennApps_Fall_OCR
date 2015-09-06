@@ -52,7 +52,7 @@ body {
 
 #html-bars {
     margin-left:-20px;
-    margin-top:70px;
+    margin-top:10px;
 }
 
 #html-pies {
@@ -60,6 +60,26 @@ body {
     width:20%;
 }
 
+#income {
+    padding-top:0px;
+    margin-top:0px;
+}
 
+#spent {
+    padding-top:0px;
+    margin-top:0px;
+    padding-left:50px;
+}
 
+.spending-table {
+    width:650px;
+    margin-top:200px;
+}
+/*
+#image1 {
+    visibility: hidden;
+}
 
+#image2 {
+    visibility: hidden;
+}*/
